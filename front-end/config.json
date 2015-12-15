@@ -1,0 +1,4 @@
+﻿{
+    "apiUrl":  "http://localhost:3001",
+    "secret": "REPLACE THIS WITH YOUR OWN SECRET, IT CAN BE ANY STRING"
+}

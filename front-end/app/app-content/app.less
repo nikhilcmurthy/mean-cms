@@ -1,0 +1,214 @@
+﻿/* GENERAL STYLES AND CLASSES 
+--------------------------------------------------------------------- */
+body {
+    display: flex;
+    flex-direction: column;
+
+    h1 {
+        font-weight: normal;
+    }
+
+    a {
+        cursor: pointer;
+    }
+
+    /* toast message */
+    #toast-message {
+        &.success {
+            background: #5cb85c;
+        }
+
+        &.error {
+            background: #c9302c;
+        }
+
+        .fa {
+            font-size: 20px;
+            margin-right: 5px;
+        }
+
+        .close {
+            font-size: 20px;
+            margin-left: 20px;
+        }
+    }
+
+    /* view animate container */
+    .view-animate {
+        min-width: 50%;
+
+        &.ng-enter, &.ng-leave {
+            transition: left 0.5s;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            .form-container {
+                display: none;
+            }
+        }
+
+        &.ng-enter {
+            left: 100%;
+
+            &.ng-enter-active {
+                left: 0;
+            }
+        }
+
+        &.ng-leave.ng-leave-active {
+            left: 100%;
+        }
+    }
+}
+
+/* HEADER STYLES
+--------------------------------------------------------------------- */
+header {
+    background: #2e373e;
+
+    nav {
+        md-tabs {
+            padding-right: 120px;
+
+            .md-tab {
+                padding: 0;
+
+                a {
+                    display: block;
+                    padding: 12px 24px;
+                    color: #fff;
+                    text-decoration: none;
+                }
+
+                &.md-active, &.md-focused {
+                    a {
+                        color: #40a8fd;
+                    }
+                }
+            }
+        }
+
+        .logout {
+            position: absolute;
+            top: 0;
+            right: 0;
+            color: #fff;
+        }
+    }
+}
+
+/* MAIN STYLES
+--------------------------------------------------------------------- */
+main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .subnav {
+        border-bottom: 1px solid #e0e0e0;
+        padding: 2px 0 0 8px;
+    }
+
+    h1:first-child {
+        margin-top: 0;
+    }
+
+    .main-content {
+        flex: 1;
+        padding: 20px;
+        overflow: auto;
+        position: relative;
+
+        /* wijmo grid */
+        .wj-flexgrid {
+            height: 500px;
+
+            .wj-cell {
+                padding-top: 5px;
+            }
+
+            .actions-cell {
+                text-align: center;
+                background: inherit;
+
+                a {
+                    display: inline-block;
+                    text-decoration: none;
+                    color: #444;
+                    margin: -2px 1px 4px 1px;
+                    background: #eaeaea;
+                    padding: 3px 4px;
+                    border: 1px solid #c6c6c6;
+                    border-radius: 3px;
+                    font-size: 12px;
+                    line-height: 12px;
+                    transition: background 0.4s;
+
+                    &:hover {
+                        background: #c6c6c6;
+                    }
+
+                    .fa {
+                        font-size: 14px;
+                    }
+                }
+            }
+        }
+
+        /* side form */
+        .side-form {
+            min-width: 50%;
+            position: absolute;
+            right: 0;
+            top: 0;
+            background: #fff;
+            padding: 20px;
+            border-left: 1px solid #e0e0e0;
+            height: 100%;
+            box-sizing: border-box;
+            overflow: auto;
+
+            .drop-box {
+                background: #F8F8F8;
+                border: 5px dashed #DDD;
+                width: 100%;
+                height: 110px;
+                text-align: center;
+                padding-top: 40px;
+                box-sizing: border-box;
+                margin: 10px 0 10px 0;
+            }
+
+            .files {
+                margin-bottom: 20px;
+
+                md-progress-linear {
+                    padding-top: 10px;
+                    margin-bottom: 20px; 
+                }
+
+                .remove {
+                    color: #c9302c;
+                    text-decoration: none;
+                }
+
+                .error {
+                    color: #c9302c;
+                }
+            }
+        }
+    }
+}
+
+/* FOOTER STYLES
+--------------------------------------------------------------------- */
+footer {
+    background: #232730;
+    text-align: center;
+    padding: 10px;
+    font-size: 11px;
+    color: #f5f6f8;
+}

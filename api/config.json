@@ -1,0 +1,4 @@
+{
+    "connectionString": "localhost:27017/mean-cms",
+    "secret": "REPLACE THIS WITH YOUR OWN SECRET, IT CAN BE ANY STRING"
+}

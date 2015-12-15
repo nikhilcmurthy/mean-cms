@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>MEAN CMS Login</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+    <style type="text/css">
+        body {
+            padding-top: 100px;
+        }
+
+        .login-container {
+            width: 300px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>MEAN CMS Login</h2>
+        <% if(locals.error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+        <% } %>
+        <form method="post">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username" value="<%= locals.username || '' %>" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" class="form-control" />
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

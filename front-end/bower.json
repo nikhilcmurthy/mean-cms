@@ -1,0 +1,6 @@
+{
+  "name": "mean-cms",
+  "dependencies": {
+    "ng-file-upload": "^10.0.0"
+  }
+}

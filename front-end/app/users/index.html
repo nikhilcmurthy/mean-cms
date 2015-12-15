@@ -1,0 +1,22 @@
+﻿<div class="subnav">
+    <md-button ui-sref="users">Users</md-button>
+    <md-button ui-sref="users.add">Add User</md-button>
+</div>
+
+<div class="main-content">
+    <h1>Users</h1>
+    <wj-flex-grid items-source="vm.users" control="vm.flexgrid" is-read-only="true" selection-mode="None">
+        <wj-flex-grid-column header="First Name" binding="firstName" width="*">
+        </wj-flex-grid-column>
+        <wj-flex-grid-column header="Last Name" binding="lastName" width="*">
+        </wj-flex-grid-column>
+        <wj-flex-grid-column header="Username" binding="username" width="*">
+        </wj-flex-grid-column>
+        <wj-flex-grid-column width="130" css-class="actions-cell">
+            <a href ui-sref="users.edit({ _id: $item._id })"><i class="fa fa-pencil"></i> Edit</a>
+            <a href ng-click="vm.deleteUser($item._id)"><i class="fa fa-times"></i> Delete</a>
+        </wj-flex-grid-column>
+    </wj-flex-grid>
+
+    <div ui-view class="view-animate"></div>
+</div>
