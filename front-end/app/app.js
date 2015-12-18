@@ -13,37 +13,31 @@
         $urlRouterProvider.otherwise("/");
 
         // make trailing slash in urls optional
-        $urlMatcherFactoryProvider.strictMode(false)
+        $urlMatcherFactoryProvider.strictMode(false);
 
         $stateProvider
             .state('overview', {
                 url: '/',
-                templateUrl: 'overview/index.html',
-                controller: 'Overview.IndexController',
+                templateUrl: 'overview/main.html',
+                controller: 'Overview.MainController',
                 controllerAs: 'vm',
                 data: { selectedTab: 0 }
             })
-            .state('content', {
-                url: '/content',
-                templateUrl: 'content/main.html',
-                controller: 'Content.IndexController',
-                data: { selectedTab: 1 }
-            })
             .state('users', {
                 url: '/users',
-                templateUrl: 'users/index.html',
-                controller: 'Users.IndexController',
+                templateUrl: 'users/main.html',
+                controller: 'Users.MainController',
                 controllerAs: 'vm',
                 data: { selectedTab: 1 }
             })
                 .state('users.add', {
-                    url: '/users/add',
+                    url: '/add',
                     templateUrl: 'users/add-edit.html',
                     controller: 'Users.AddEditController',
                     controllerAs: 'vm'
                 })
                 .state('users.edit', {
-                    url: '/users/edit/:_id',
+                    url: '/edit/:_id',
                     templateUrl: 'users/add-edit.html',
                     controller: 'Users.AddEditController',
                     controllerAs: 'vm'

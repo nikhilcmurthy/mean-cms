@@ -3,7 +3,7 @@
 
     angular
         .module('app')
-        .controller('Users.IndexController', Controller);
+        .controller('Users.MainController', Controller);
 
     function Controller($scope, UserService, $timeout, $mdDialog) {
         var vm = this;
