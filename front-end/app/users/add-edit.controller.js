@@ -116,8 +116,9 @@
                         })
                         .progress(function (evt) {
                             var file = _.findWhere(vm.user.files, { name: evt.config.file.name });
-                            delete file.path;
-                            file.progress = parseInt(100.0 * evt.loaded / evt.total);
+                            if (!file.path) { // path is set on success
+                                file.progress = parseInt(100.0 * evt.loaded / evt.total);
+                            }
                         })
                         .success(function (data, status, headers, config) {
                             var file = _.findWhere(vm.user.files, { name: config.file.name });
