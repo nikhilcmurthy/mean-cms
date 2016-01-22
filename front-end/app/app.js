@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('app', ['ngMaterial', 'md.data.table', 'ngAnimate', 'ngMessages', 'ui.router', 'ngFileUpload', 'wj'])
+        .module('app', ['ngMaterial', 'md.data.table', 'ngAnimate', 'ngMessages', 'ui.router', 'ngFileUpload'])
         .config(config)
         .run(run);
 
