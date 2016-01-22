@@ -1,6 +1,7 @@
 {
   "name": "mean-cms",
   "dependencies": {
-    "ng-file-upload": "^10.0.0"
+    "ng-file-upload": "^10.0.0",
+    "angular-material-data-table": "^0.9.9"
   }
 }

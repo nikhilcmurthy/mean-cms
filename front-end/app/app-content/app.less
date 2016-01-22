@@ -88,42 +88,18 @@ main {
 
     .main-content {
         flex: 1;
-        padding: 20px;
+        padding: 10px;
         overflow: auto;
         position: relative;
 
-        /* wijmo grid */
-        .wj-flexgrid {
-            height: 500px;
+        md-content {
+            z-index: 0;
 
-            .wj-cell {
-                padding-top: 5px;
-            }
-
-            .actions-cell {
-                text-align: center;
-                background: inherit;
-
-                a {
-                    display: inline-block;
-                    text-decoration: none;
-                    color: #444;
-                    margin: -2px 1px 4px 1px;
-                    background: #eaeaea;
-                    padding: 3px 4px;
-                    border: 1px solid #c6c6c6;
-                    border-radius: 3px;
-                    font-size: 12px;
-                    line-height: 12px;
-                    transition: background 0.4s;
-
-                    &:hover {
-                        background: #c6c6c6;
-                    }
-
-                    .fa {
-                        font-size: 14px;
-                    }
+            /* md table */
+            .md-table {
+                .actions-cell {
+                    width: 50px;
+                    white-space: nowrap;
                 }
             }
         }

@@ -5,8 +5,9 @@
         .module('app')
         .controller('Users.AddEditController', Controller);
 
-    function Controller($scope, $state, $stateParams, $timeout, UserService, ToastService, FileService) {
+    function Controller($scope, $state, $stateParams, DataService, ToastService, FileService) {
         var vm = this;
+        var UserService = DataService('users');
 
         vm.title = 'Add User';
         vm.user = {};

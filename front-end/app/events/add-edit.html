@@ -1,0 +1,29 @@
+﻿<div class="side-form">
+    <div class="content">
+        <h1>{{vm.item._id ? 'Edit Event' : 'Add Event'}}</h1>
+
+        <div class="form-container">
+            <form name="form">
+                <md-input-container>
+                    <label for="title">Title</label>
+                    <input type="text" ng-model="vm.item.title" name="title" required />
+                    <div ng-messages="form.title.$dirty && form.title.$error">
+                        <div ng-message="required">This is required.</div>
+                    </div>
+                </md-input-container>
+                <md-input-container>
+                    <label for="field1">Field 1</label>
+                    <input type="text" ng-model="vm.item.field1" name="field1" />
+                </md-input-container>
+                <md-input-container>
+                    <label for="field2">Field 2</label>
+                    <input type="text" ng-model="vm.item.field2" name="field2" />
+                </md-input-container>
+
+                <md-button ng-click="vm.saveItem(vm.item)" class="md-raised md-primary">Save</md-button>
+                <md-button href="/events" class="md-raised">Cancel</md-button>
+            </form>
+        </div>
+    </div>
+    <div class="background"></div>
+</div>

@@ -1,0 +1,35 @@
+﻿<div class="side-form">
+    <div class="content">
+        <h1>{{vm.item._id ? 'Edit Staff Member' : 'Add Staff Member'}}</h1>
+
+        <div class="form-container">
+            <form name="form">
+                <md-input-container>
+                    <label for="title">First Name</label>
+                    <input type="text" ng-model="vm.item.firstName" name="firstName" required />
+                    <div ng-messages="form.firstName.$dirty && form.firstName.$error">
+                        <div ng-message="required">This is required.</div>
+                    </div>
+                </md-input-container>
+                <md-input-container>
+                    <label for="title">Last Name</label>
+                    <input type="text" ng-model="vm.item.lastName" name="lastName" required />
+                    <div ng-messages="form.lastName.$dirty && form.lastName.$error">
+                        <div ng-message="required">This is required.</div>
+                    </div>
+                </md-input-container>
+                <md-input-container>
+                    <label for="title">Position</label>
+                    <input type="text" ng-model="vm.item.position" name="title" required />
+                    <div ng-messages="form.position.$dirty && form.position.$error">
+                        <div ng-message="required">This is required.</div>
+                    </div>
+                </md-input-container>
+
+                <md-button ng-click="vm.saveItem(vm.item)" class="md-raised md-primary">Save</md-button>
+                <md-button href="/staff" class="md-raised">Cancel</md-button>
+            </form>
+        </div>
+    </div>
+    <div class="background"></div>
+</div>

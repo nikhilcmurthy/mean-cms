@@ -9,15 +9,17 @@
         .factory('DataService', Service);
 
     function Service($rootScope, $http, $q, Cache, Socket) {
-        var service = {};
+        return function (type) {
+            var service = {};
 
-        service.GetAll = GetAll;
-        service.GetById = GetById;
-        service.Create = Create;
-        service.Update = Update;
-        service.Delete = Delete;
+            service.GetAll = GetAll(type);
+            service.GetById = GetById(type);
+            service.Create = Create(type);
+            service.Update = Update(type);
+            service.Delete = Delete(type);
 
-        return service;
+            return service;
+        }
 
         function GetAll(type) {
             return function () {
@@ -81,6 +83,9 @@
         function Create(type) {
             return function (item) {
                 var deferred = $q.defer();
+
+                console.log('posting', $rootScope.apiUrl + '/' + type);
+                console.log('item', item);
 
                 $http.post($rootScope.apiUrl + '/' + type, item)
                     .then(function (res) { deferred.resolve(); })

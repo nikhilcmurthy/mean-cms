@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('app', ['ngMaterial', 'ngAnimate', 'ngMessages', 'ui.router', 'ngFileUpload', 'wj'])
+        .module('app', ['ngMaterial', 'md.data.table', 'ngAnimate', 'ngMessages', 'ui.router', 'ngFileUpload', 'wj'])
         .config(config)
         .run(run);
 
@@ -41,7 +41,31 @@
                     templateUrl: 'users/add-edit.html',
                     controller: 'Users.AddEditController',
                     controllerAs: 'vm'
-                });
+                })
+        .state('generic', {
+            url: '/:dataType',
+            templateUrl: function ($stateParams) {
+                return $stateParams.dataType + '/main.html';
+            },
+            controller: 'Generic.MainController',
+            controllerAs: 'vm'
+        })
+            .state('generic.add', {
+                url: '/add',
+                templateUrl: function ($stateParams) {
+                    return $stateParams.dataType + '/add-edit.html';
+                },
+                controller: 'Generic.AddEditController',
+                controllerAs: 'vm'
+            })
+            .state('generic.edit', {
+                url: '/edit/:_id',
+                templateUrl: function ($stateParams) {
+                    return $stateParams.dataType + '/add-edit.html';
+                },
+                controller: 'Generic.AddEditController',
+                controllerAs: 'vm'
+            });
     }
 
     function run($rootScope, $http) {

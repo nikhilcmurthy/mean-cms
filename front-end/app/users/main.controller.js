@@ -5,8 +5,9 @@
         .module('app')
         .controller('Users.MainController', Controller);
 
-    function Controller($scope, UserService, $timeout, $mdDialog) {
+    function Controller($scope, DataService) {
         var vm = this;
+        var UserService = DataService('users');
 
         vm.users = [];
         vm.deleteUser = deleteUser;
@@ -14,33 +15,21 @@
         initController();
 
         function initController() {
-            // wait for flexgrid to initialise before loading users
-            var watch = $scope.$watch('vm.flexgrid', function () {
-                if (vm.flexgrid) {
-                    loadUsers();
+            loadUsers();
 
-                    // reload users on 'users' event
-                    $scope.$on('users', function () { loadUsers(); });
-
-                    // unbind watch
-                    watch();
-                }
-            });
+            // reload users on 'users' event
+            $scope.$on('users', loadUsers);
         }
 
         function loadUsers() {
             UserService.GetAll()
                 .then(function (users) {
                     vm.users = users;
-                    vm.flexgrid.collectionView.refresh();
                 });
         }
 
         function deleteUser(_id) {
-            UserService.Delete(_id)
-                .then(function () {
-                    loadUsers();
-                });
+            UserService.Delete(_id);
         }
     }
 

@@ -1,6 +1,6 @@
 ﻿<div class="subnav">
-    <md-button ui-sref="users">Users</md-button>
-    <md-button ui-sref="users.add">Add User</md-button>
+    <md-button href="/staff">Staff</md-button>
+    <md-button href="/staff/add">Add Staff Member</md-button>
 </div>
 
 <div class="main-content">
@@ -8,7 +8,7 @@
         <md-card>
             <md-toolbar class="md-table-toolbar md-default">
                 <div class="md-toolbar-tools">
-                    <span>Users</span>
+                    <span>Staff</span>
                 </div>
             </md-toolbar>
             <md-table-container>
@@ -17,18 +17,18 @@
                         <tr md-row>
                             <th md-column>First Name</th>
                             <th md-column>Last Name</th>
-                            <th md-column>Username</th>
+                            <th md-column>Position</th>
                             <th md-column></th>
                         </tr>
                     </thead>
                     <tbody md-body>
-                        <tr md-row ng-repeat="user in vm.users">
-                            <td md-cell>{{user.firstName}}</td>
-                            <td md-cell>{{user.lastName}}</td>
-                            <td md-cell>{{user.username}}</td>
+                        <tr md-row ng-repeat="staffMember in vm.staff">
+                            <td md-cell>{{staffMember.firstName}}</td>
+                            <td md-cell>{{staffMember.lastName}}</td>
+                            <td md-cell>{{staffMember.position}}</td>
                             <td md-cell class="actions-cell">
-                                <a ui-sref="users.edit({ _id: user._id })"><i class="fa fa-pencil"></i> Edit</a>
-                                <a href ng-click="vm.deleteUser(user._id)"><i class="fa fa-times"></i> Delete</a>
+                                <a href="/staff/edit/{{staffMember._id}}"><i class="fa fa-pencil"></i> Edit</a>
+                                <a href ng-click="vm.deleteItem(staffMember._id)"><i class="fa fa-times"></i> Delete</a>
                             </td>
                         </tr>
                     </tbody>

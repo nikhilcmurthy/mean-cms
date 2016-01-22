@@ -41,6 +41,9 @@ app.use('/authenticate', require('./routes/authenticate'));
 app.use('/users', require('./routes/users'));
 app.use('/uploads', require('./routes/uploads'));
 
+// generic route for performing CRUD methods on any datatype
+app.use('/', require('./routes/generic'));
+
 // create default admin user if 'users' collection is empty
 db.get('users').count({}, function (err, count) {
     if (count === 0) {
