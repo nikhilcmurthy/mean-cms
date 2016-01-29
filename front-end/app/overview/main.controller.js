@@ -1,12 +1,11 @@
-﻿(function () {
-    'use strict';
+﻿'use strict';
 
-    angular
-        .module('app')
-        .controller('Overview.MainController', Controller);
+class OverviewController {
 
-    function Controller() {
+    constructor() {
         var vm = this;
+        vm.greeting = 'hello from angular with webpack dev server !!!';
     }
+}
 
-})();
+export default OverviewController;
