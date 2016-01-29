@@ -2,6 +2,7 @@
 
 var webpack = require('webpack');
 var path = require('path');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const APP = path.resolve(__dirname, 'app');
 const BUILD_DIR = path.resolve(__dirname, 'app/app-dist');
@@ -50,7 +51,7 @@ const webpackConfig = {
             },
             {
                 test: /\.less$/,
-                loader: 'style!css!less'
+                loader: ExtractTextPlugin.extract('css?sourceMap!less?sourceMap')
             },
             {
                 test: /\.css$/,
@@ -72,7 +73,8 @@ const webpackConfig = {
             $: 'jQuery',
             'window.jquery': 'jquery'
         }),
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.HotModuleReplacementPlugin(),
+        new ExtractTextPlugin('[name].css', ['allChunks'])
     ]
 };
 
