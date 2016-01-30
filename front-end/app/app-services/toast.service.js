@@ -1,35 +1,32 @@
-﻿(function () {
-    'use strict';
+﻿'use strict';
 
-    angular
-        .module('app')
-        .factory('ToastService', Service);
+class ToastService {
 
-    function Service($mdToast) {
-        var service = {};
-
-        service.Success = Flash('success');
-        service.Error = Flash('error');
-
-        return service;
-
-        function Flash(type) {
-            return function (message) {
-                $mdToast.show({
-                    controller: Controller,
-                    controllerAs: 'vm',
-                    templateUrl: 'toast-' + type + '-template.html',
-                    hideDelay: 6000,
-                });
-
-                function Controller() {
-                    var vm = this;
-
-                    vm.message = message;
-                    vm.close = $mdToast.hide;
-                }
-            }
-        }
+    constructor($mdToast) {
+        'ngInject';
+        this.$mdToast = $mdToast;
     }
 
-})();
+    Success(message) {
+        this.$mdToast.show(ToastService.Flash('success', message));
+    }
+
+    Error(message) {
+        this.$mdToast.show(ToastService.Flash('error', message));
+    }
+
+    static Flash(type = 'success', message = '') {
+        return {
+            controller: ($mdToast) => {
+                'ngInject';
+                this.message = message;
+                this.close = $mdToast.hide;
+            },
+            controllerAs: 'vm',
+            templateUrl: 'toast-' + type + '-template.html',
+            hideDelay: 6000
+        };
+    }
+}
+
+export default ToastService;

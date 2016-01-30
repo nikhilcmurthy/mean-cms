@@ -1,123 +1,138 @@
 ﻿/*
     Generic data service for accessing api and caching results
 */
-(function () {
-    'use strict';
+'use strict';
 
-    angular
-        .module('app')
-        .factory('DataService', Service);
+import _ from 'lodash';
 
-    function Service($rootScope, $http, $q, Cache, Socket) {
-        return function (type) {
-            var service = {};
+const _dataType = new WeakMap();
 
-            service.GetAll = GetAll(type);
-            service.GetById = GetById(type);
-            service.Create = Create(type);
-            service.Update = Update(type);
-            service.Delete = Delete(type);
+class DataService {
 
-            return service;
-        }
+    constructor($rootScope, $http, CacheService, SocketService) {
+        'ngInject';
 
-        function GetAll(type) {
-            return function () {
-                var deferred = $q.defer();
+        this.injectables = {
+            $rootScope,
+            $http,
+            CacheService,
+            SocketService
+        };
 
-                if (!Cache.get(type)) {
-                    // get data from api
-                    $http.get($rootScope.apiUrl + '/' + type)
-                        .then(function (res) {
-                            // cache data then return
-                            Cache.put(type, res.data);
-                            deferred.resolve(res.data);
-                        })
-                        .catch(function (res) {
-                            deferred.reject(res.data);
-                        });
-                } else {
-                    // return data from cache
-                    deferred.resolve(Cache.get(type));
-                }
-
-                // subscribe to any changes to this type
-                Socket.On(type, function (data) {
-                    GetAll(type)().then(function (items) {
-                        switch (data.action) {
-                            case 'created':
-                                // add item to cache
-                                items.push(data.item);
-                                Cache.put(type, items);
-                                break;
-                            case 'updated':
-                                // update item in cache
-                                var index = _.findIndex(items, { _id: data.item._id })
-                                items[index] = data.item;
-                                Cache.put(type, items);
-                                break;
-                            case 'deleted':
-                                // remove item from cache
-                                items = _.without(items, _.findWhere(items, { _id: data._id }));
-                                Cache.put(type, items);
-                                break
-                        }
-
-                        // broadcast event to controllers to update views
-                        $rootScope.$broadcast(type, data);
-                    });
-                });
-
-                return deferred.promise;
-            }
-        }
-
-        function GetById(type) { 
-            return function (_id) {
-                return GetAll(type)().then(function (items) {
-                    return _.findWhere(items, { _id: _id });
-                });
-            }
-        }
-
-        function Create(type) {
-            return function (item) {
-                var deferred = $q.defer();
-
-                console.log('posting', $rootScope.apiUrl + '/' + type);
-                console.log('item', item);
-
-                $http.post($rootScope.apiUrl + '/' + type, item)
-                    .then(function (res) { deferred.resolve(); })
-                    .catch(function (res) { deferred.reject(res.data); });
-
-                return deferred.promise;
-            }
-        }
-
-        function Update(type) {
-            return function (item) {
-                var deferred = $q.defer();
-
-                $http.put($rootScope.apiUrl + '/' + type + '/' + item._id, item)
-                    .then(function (res) { deferred.resolve(); })
-                    .catch(function (res) { deferred.reject(res.data); });
-
-                return deferred.promise;
-            }
-        }
-
-        function Delete(type) {
-            return function (_id) {
-                var deferred = $q.defer();
-
-                $http.delete($rootScope.apiUrl + '/' + type + '/' + _id)
-                    .then(function (res) { deferred.resolve(); })
-                    .catch(function (res) { deferred.reject(res.data); });
-
-                return deferred.promise;
-            }
-        }
+        _dataType.set(this, '');
     }
 
-})();
+    set DataType(value) {
+        _dataType.set(this, value);
+        this.RegisterSockets();
+    }
+
+    GetAll() {
+        return new Promise(function (resolve, reject) {
+            const { $rootScope, $http, CacheService } = this.injectables;
+            let cachedData = CacheService.Get(_dataType.get(this));
+            if (cachedData) {
+                resolve(cachedData);
+            } else {
+                $http.get(`${$rootScope.apiUrl}/${_dataType.get(this)}`)
+                    .then(function (res) {
+                        resolve(res.data);
+                    })
+                    .catch(function (reason) {
+                        reject(reason);
+                    });
+            }
+        });
+    }
+
+    RegisterSockets() {
+        const { SocketService, CacheService, $rootScope } = this.injectables;
+        const dataType = _dataType.get(this);
+
+        // subscribe to any changes to this type
+        SocketService.On(dataType, function (data) {
+            this.GetAll()
+                .then(function (items) {
+                switch (data.action) {
+                    case 'created':
+                        // add item to cache
+                        items.push(data.item);
+                        CacheService.Set(dataType, items);
+                        break;
+                    case 'updated':
+                        // update item in cache
+                        var index = _.findIndex(items, { _id: data.item._id })
+                        items[index] = data.item;
+                        CacheService.Set(dataType, items);
+                        break;
+                    case 'deleted':
+                        // remove item from cache
+                        items = _.without(items, _.findWhere(items, { _id: data._id }));
+                        CacheService.Set(dataType, items);
+                        break
+                }
+
+                // broadcast event to controllers to update views
+                $rootScope.$broadcast(dataType, data);
+            });
+        });
+    }
+
+    GetById(id) {
+        this.GetAll()
+            .then(function (items) {
+                return _.findWhere(items, {_id: id});
+            });
+    }
+
+    Create(item) {
+        const { $http, $rootScope } = this.injectables;
+        const dataType = _dataType.get(this);
+
+        console.log('posting', $rootScope.apiUrl + '/' + type);
+        console.log('item', item);
+
+        return new Promise(function (resolve, reject) {
+            $http.post(`${$rootScope.apiUrl}/${dataType}`, item)
+                .then(function (res) {
+                    resolve(res);
+                })
+                .catch(function (res) {
+                    reject(res.data);
+                });
+        });
+    }
+
+    Update(item) {
+        const { $http, $rootScope } = this.injectables;
+        const dataType = _dataType.get(this);
+
+        return new Promise(function (resolve, reject) {
+            $http.put(`${$rootScope.apiUrl}/${dataType}/${item._id}`, item)
+                .then(function (res) {
+                    resolve(res);
+                })
+                .catch(function (res) {
+                    reject(res.data);
+                });
+        });
+    }
+
+    Delete(id) {
+        const { $http, $rootScope } = this.injectables;
+        const dataType = _dataType.get(this);
+
+        return new Promise(function (resolve, reject) {
+            $http.delete(`${$rootScope.apiUrl}/${dataType}/${id}`)
+                .then(function (res) {
+                    resolve(res);
+                })
+                .catch(function (res) {
+                    reject(res.data);
+                });
+        });
+    }
+
+}
+
+export default DataService;

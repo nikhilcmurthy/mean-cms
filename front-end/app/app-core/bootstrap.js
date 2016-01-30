@@ -7,6 +7,7 @@ import './../app-content/app.less';
 
 import overviewModule from './../overview';
 import tabsModule from './../layout';
+import servicesModule from './../app-services';
 import cmsModuleConfigurator from './config';
 
 const app = angular.module('app', [
@@ -17,7 +18,8 @@ const app = angular.module('app', [
     'ngFileUpload',
     'md.data.table',
     overviewModule,
-    tabsModule
+    tabsModule,
+    servicesModule
 ]);
 
 cmsModuleConfigurator(app);
