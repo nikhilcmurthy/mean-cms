@@ -1,36 +1,34 @@
-﻿(function () {
-    'use strict';
+﻿'use strict';
 
-    angular
-        .module('app')
-        .controller('Users.MainController', Controller);
+class UserMainController {
 
-    function Controller($scope, DataService) {
-        var vm = this;
-        var UserService = DataService('users');
+    constructor($scope, $log, DataService) {
+        'ngInject';
 
-        vm.users = [];
-        vm.deleteUser = deleteUser;
+        DataService.DataType = 'users';
 
-        initController();
+        this.injectables = { $scope, $log, DataService };
+        this.users = [];
+        this.loadUsers();
 
-        function initController() {
-            loadUsers();
-
-            // reload users on 'users' event
-            $scope.$on('users', loadUsers);
-        }
-
-        function loadUsers() {
-            UserService.GetAll()
-                .then(function (users) {
-                    vm.users = users;
-                });
-        }
-
-        function deleteUser(_id) {
-            UserService.Delete(_id);
-        }
+        $scope.$on('users', this.loadUsers);
     }
 
-})();
+    loadUsers() {
+        const { DataService, $log } = this.injectables;
+        DataService.GetAll()
+            .then((users) => {
+                this.users = users;
+            })
+            .catch((reason) => {
+                $log.error(reason);
+            });
+    }
+
+    deleteUser(id) {
+        const { DataService } = this.injectables;
+        DataService.Delete(id);
+    }
+}
+
+export default UserMainController;

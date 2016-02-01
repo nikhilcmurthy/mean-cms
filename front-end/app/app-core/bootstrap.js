@@ -7,6 +7,7 @@ import './../app-content/app.less';
 
 import overviewModule from './../overview';
 import tabsModule from './../layout';
+import userModule from './../users';
 import servicesModule from './../app-services';
 import cmsModuleConfigurator from './config';
 
@@ -19,6 +20,7 @@ const app = angular.module('app', [
     'md.data.table',
     overviewModule,
     tabsModule,
+    userModule,
     servicesModule
 ]);
 

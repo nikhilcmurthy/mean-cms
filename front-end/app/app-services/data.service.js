@@ -28,7 +28,7 @@ class DataService {
     }
 
     GetAll() {
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             const { $rootScope, $http, CacheService } = this.injectables;
             let cachedData = CacheService.Get(_dataType.get(this));
             if (cachedData) {
