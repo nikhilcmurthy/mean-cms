@@ -8,17 +8,23 @@ const APP = path.resolve(__dirname, 'app');
 const BUILD_DIR = path.resolve(__dirname, 'app/app-dist');
 const NODE_MODULES = path.resolve(__dirname, 'node_modules');
 
+// hot module replacement (HMR) is not available in angular. There is
+// no angular version of 'react-hot-loader'.
+//
+// commenting HMR entry point and webpack plugin for future reference
 const webpackConfig = {
     devtool: 'source-map',
 
     // set application base directory (must be an absolute path)
     // for resolving entry and output path
     context: APP,
+
+    // multiple entry points to support vendor - app code splitting
     entry: {
         babelPolyfill: 'babel-polyfill',
         app: [
             'webpack-dev-server/client?http://localhost:8080',
-            'webpack/hot/dev-server',
+            //'webpack/hot/dev-server',
             './app-core/bootstrap.js'
         ],
         vendor: [
@@ -73,8 +79,11 @@ const webpackConfig = {
             $: 'jQuery',
             'window.jquery': 'jquery'
         }),
-        new webpack.HotModuleReplacementPlugin(),
+
+        // create a separate chunk for application css files for easier debugging
         new ExtractTextPlugin('[name].css', ['allChunks'])
+
+        //new webpack.HotModuleReplacementPlugin()
     ]
 };
 
