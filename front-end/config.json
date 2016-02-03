@@ -1,4 +1,10 @@
 ﻿{
     "apiUrl":  "http://localhost:3001",
-    "secret": "REPLACE THIS WITH YOUR OWN SECRET, IT CAN BE ANY STRING"
+    "secret": "REPLACE THIS WITH YOUR OWN SECRET, IT CAN BE ANY STRING",
+    "webpack": {
+        "devServerHost": "localhost",
+        "devServerPort": "8080"
+    },
+    "host": "localhost",
+    "port": "3000"
 }
