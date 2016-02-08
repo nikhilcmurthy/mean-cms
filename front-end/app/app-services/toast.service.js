@@ -22,9 +22,11 @@ class ToastService {
                 this.message = message;
                 this.close = $mdToast.hide;
             },
+            bindToController: true,
             controllerAs: 'vm',
             templateUrl: 'toast-' + type + '-template.html',
-            hideDelay: 6000
+            hideDelay: 6000,
+            locals: { message }
         };
     }
 }

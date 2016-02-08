@@ -13,11 +13,13 @@ class SocketService {
     }
 
     On(eventName, callback) {
-        if (!_.find(this.$rootScope.socketListeners, eventName)) {
+        if (!this.$rootScope.socketListeners.find(function(name) {
+                return name === eventName;
+            })) {
             this.$rootScope.socketListeners.push(eventName);
             this.socket.on(eventName, (...args) => {
                 this.$rootScope.$apply(() => {
-                    callback.apply(this.socket, args);
+                    callback.apply(null, args);
                 });
             });
         }

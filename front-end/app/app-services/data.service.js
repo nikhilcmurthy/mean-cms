@@ -50,7 +50,7 @@ class DataService {
         const dataType = _dataType.get(this);
 
         // subscribe to any changes to this type
-        SocketService.On(dataType, function (data) {
+        SocketService.On(dataType, (data) => {
             this.GetAll()
                 .then(function (items) {
                 switch (data.action) {
@@ -61,36 +61,33 @@ class DataService {
                         break;
                     case 'updated':
                         // update item in cache
-                        var index = _.findIndex(items, { _id: data.item._id })
+                        var index = _.findIndex(items, { _id: data.item._id });
                         items[index] = data.item;
                         CacheService.Set(dataType, items);
                         break;
                     case 'deleted':
                         // remove item from cache
-                        items = _.without(items, _.findWhere(items, { _id: data._id }));
+                        items = _.without(items, _.find(items, { _id: data._id }));
                         CacheService.Set(dataType, items);
                         break
                 }
 
                 // broadcast event to controllers to update views
-                $rootScope.$broadcast(dataType, data);
+                $rootScope.$broadcast(dataType, { items, data});
             });
         });
     }
 
     GetById(id) {
-        this.GetAll()
+        return this.GetAll()
             .then(function (items) {
-                return _.findWhere(items, {_id: id});
+                return _.find(items, {_id: id});
             });
     }
 
     Create(item) {
         const { $http, $rootScope } = this.injectables;
         const dataType = _dataType.get(this);
-
-        console.log('posting', $rootScope.apiUrl + '/' + type);
-        console.log('item', item);
 
         return new Promise(function (resolve, reject) {
             $http.post(`${$rootScope.apiUrl}/${dataType}`, item)

@@ -1,21 +1,18 @@
-﻿(function () {
-    'use strict';
+﻿'use strict';
 
-    angular
-        .module('app')
-        .factory('FileService', Service);
+class FileService {
 
-    function Service($rootScope, $http, Upload) {
-        var service = {};
+    constructor($rootScope, $http, Upload) {
+        'ngInject';
 
-        service.Upload = Upload.upload;
-        service.Delete = deleteFile;
-
-        return service;
-
-        function deleteFile(file) {
-            $http.delete($rootScope.apiUrl + file.path);
-        }
+        this.injectables = { $rootScope, $http };
+        this.Upload = Upload.upload;
     }
 
-})();
+    DeleteFile(file) {
+        const { $http, $rootScope } = this.injectables;
+        $http.delete(`${$rootScope.apiUrl}${file.path}`);
+    }
+}
+
+export default FileService;
