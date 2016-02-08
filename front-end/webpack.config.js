@@ -64,8 +64,16 @@ const webpackConfig = {
                 loader: 'style!css'
             },
             {
-                test: [/fontawesome-webfont\.svg/, /fontawesome-webfont\.eot/, /fontawesome-webfont\.ttf/, /fontawesome-webfont\.woff/, /fontawesome-webfont\.woff2/],
+                test: /\.(ttf|eot)(\?v=[0-9]\.[0-9]\.[0.9])?$/,
                 loader: 'file?name=fonts/[name].[ext]'
+            },
+            {
+                test: /\.(png|gif|jpe?g|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: 'url?limit=10000'
+            },
+            {
+                test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: 'url'
             }
         ]
     },
