@@ -11,7 +11,9 @@ class UserMainController {
         this.users = [];
         this.loadUsers();
 
-        $scope.$on('users', this.loadUsers);
+        $scope.$on('users', (dataType, { items }) => {
+            this.users = items;
+        });
     }
 
     loadUsers() {

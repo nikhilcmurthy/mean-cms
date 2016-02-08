@@ -15,7 +15,20 @@ class UserConfig {
                     selectedTab: 1,
                     selectedTabName: 'users'
                 }
-            });
+            })
+                .state('users.add', {
+                    url: '/add',
+                    template: require('./add-edit.html'),
+                    controller: 'UserEditController',
+                    controllerAs: 'vm'
+                })
+                .state('users.edit', {
+                    url: '/edit/:_id',
+                    template: require('./add-edit.html'),
+                    controller: 'UserEditController',
+                    controllerAs: 'vm'
+                });
+
     }
 }
 

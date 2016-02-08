@@ -1,153 +1,178 @@
-﻿(function () {
-    'use strict';
+﻿'use strict';
 
-    angular
-        .module('app')
-        .controller('Users.AddEditController', Controller);
+import _ from 'lodash';
 
-    function Controller($scope, $state, $stateParams, DataService, ToastService, FileService) {
-        var vm = this;
-        var UserService = DataService('users');
+class UserEditController {
 
-        vm.title = 'Add User';
-        vm.user = {};
-        vm.saveUser = saveUser;
-        vm.removeFile = removeFile;
+    constructor($scope, $state, $stateParams, $log, DataService, ToastService, FileService) {
+        'ngInject';
 
-        initController();
+        DataService.DataType = 'users';
 
-        function initController() {
-            if ($stateParams._id) {
-                vm.title = 'Edit User';
-                UserService.GetById($stateParams._id)
-                    .then(function (user) {
-                        // deep clone user into vm.user to prevent unsaved changes staying in the cache
-                        $.extend(true, vm.user, user);
-                    });
+        this.injectables = {$scope, $state, $stateParams, $log, DataService, ToastService, FileService};
+        this.title = 'Add User';
+        this.user = {};
+        this.filesToDelete = [];
 
-                // alert if user is updated/deleted by another user
-                $scope.$on('users', function (event, data) {
-                    var _id = data.item && data.item._id || data._id;
-                    if (_id === vm.user._id && _id !== vm.updatedId) {
-                        ToastService.Error('This user was just ' + data.action + ' by another user');
-                    }
+        this.initUserStateForEdit();
+        this.initFileStateForEdit();
+    }
+
+    initUserStateForEdit() {
+        const { $stateParams, $scope, $log, DataService, ToastService } = this.injectables;
+
+        if ($stateParams._id) {
+            this.title = 'Edit User';
+            DataService.GetById($stateParams._id)
+                .then((user) => {
+                    // deep clone user into this.user to prevent unsaved changes staying in the cache
+                    Object.assign(this.user, user);
+                })
+                .catch(function (reason) {
+                    $log.error(reason);
+                    ToastService.Error('Unable to fetch details for requested user');
+                });
+
+            // alert if user is updated/deleted by another user
+            $scope.$on('users', (event, { data }) => {
+                const _id = data.item && data.item._id || data._id;
+                if (_id === this.user._id && _id !== this.updatedId) {
+                    ToastService.Error('This user was just ' + data.action + ' by another user');
+                }
+            });
+        }
+    }
+
+    initFileStateForEdit() {
+        const { $scope, FileService } = this.injectables;
+
+        $scope.$watch('files', () => {
+            this.uploadFiles($scope.files);
+        });
+
+        $scope.$on('$destroy', () => {
+            // delete any unsaved / orphaned files
+            if (!this.saved && this.user.files) {
+                var unsavedFiles = _.filter(this.user.files, function (file) {
+                    return !file.saved
+                });
+                _.each(unsavedFiles, function (file) {
+                    FileService.Delete(file);
                 });
             }
+        })
+    }
 
-            $scope.$watch('files', function () {
-                uploadFiles($scope.files);
-            });
+    saveUser(user) {
+        const { $scope } = this.injectables;
 
-            $scope.$on('$destroy', function () {
-                // delete any unsaved / orphaned files
-                if (!vm.saved && vm.user.files) {
-                    var unsavedFiles = _.filter(vm.user.files, function (file) { return !file.saved });
-                    _.each(unsavedFiles, function (file) {
+        if ($scope.userForm.$invalid) {
+            return;
+        }
+
+        if (!user._id) {
+            this.createUser(user)
+        } else {
+            this.updateUser(user);
+        }
+    }
+
+    updateUser(user) {
+        const { $state, $log, DataService, ToastService, FileService } = this.injectables;
+
+        this.updatedId = user._id;
+        DataService.Update(user)
+            .then(() => {
+                this.saved = true;
+
+                // delete any files flagged to be deleted
+                if (this.filesToDelete) {
+                    _.each(this.filesToDelete, function (file) {
                         FileService.Delete(file);
                     });
                 }
+
+                // redirect to users view
+                $state.go('users');
+                ToastService.Success('User updated');
             })
-        }
+            .catch(function (error) {
+                $log.error(error);
+                ToastService.Error(error);
+            });
+    }
 
-        function saveUser(user) {
-            if ($scope.userForm.$invalid) {
-                return;
-            }
+    createUser(user) {
+        const { $state, $log, DataService, ToastService } = this.injectables;
+        DataService.Create(user)
+            .then(() => {
+                this.saved = true;
+                $state.go('users');
+                ToastService.Success('User created');
+            })
+            .catch(function (error) {
+                $log.error(error);
+                ToastService.Error(error);
+            });
+    }
 
-            if (!user._id) {
-                createUser()
-            } else {
-                updateUser();
-            }
+    uploadFiles(files) {
+        const { FileService } = this.injectables;
 
-            function createUser() {
-                UserService.Create(user)
-                    .then(function () {
-                        vm.saved = true;
-                        $state.go('users');
-                        ToastService.Success('User created');
+        if (files && files.length) {
+            this.user.files = this.user.files || [];
+            this.failedUploads = this.failedUploads || [];
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                file.progress = 0;
+
+                // remove file if it's already in the list to prevent orphaned files on the server
+                var existingFile = _.findWhere(this.user.files, {name: file.name});
+                if (existingFile) removeFile(existingFile);
+
+                // add file to the list
+                this.user.files.push(_.clone(file));
+
+                // upload file to server
+                FileService.Upload({
+                        url: $scope.apiUrl + '/uploads',
+                        file: file
                     })
-                    .catch(function (error) {
-                        ToastService.Error(error);
-                    });
-            }
-
-            function updateUser() {
-                vm.updatedId = user._id;
-                UserService.Update(user)
-                    .then(function () {
-                        vm.saved = true;
-
-                        // delete any files flagged to be deleted
-                        if (vm.filesToDelete) {
-                            _.each(vm.filesToDelete, function (file) {
-                                FileService.Delete(file);
-                            });
+                    .progress(function (evt) {
+                        var file = _.findWhere(this.user.files, {name: evt.config.file.name});
+                        if (!file.path) { // path is set on success
+                            file.progress = parseInt(100.0 * evt.loaded / evt.total);
                         }
-
-                        // redirect to users view
-                        $state.go('users');
-                        ToastService.Success('User updated');
                     })
-                    .catch(function (error) {
-                        ToastService.Error(error);
-                    });
-            }
-        }
-
-        function uploadFiles(files) {
-            if (files && files.length) {
-                vm.user.files = vm.user.files || [];
-                vm.failedUploads = vm.failedUploads || [];
-                for (var i = 0; i < files.length; i++) {
-                    var file = files[i];
-                    file.progress = 0;
-
-                    // remove file if it's already in the list to prevent orphaned files on the server
-                    var existingFile = _.findWhere(vm.user.files, { name: file.name });
-                    if (existingFile) removeFile(existingFile);
-
-                    // add file to the list
-                    vm.user.files.push(_.clone(file));
-
-                    // upload file to server
-                    FileService.Upload({
-                            url: $scope.apiUrl + '/uploads',
-                            file: file
-                        })
-                        .progress(function (evt) {
-                            var file = _.findWhere(vm.user.files, { name: evt.config.file.name });
-                            if (!file.path) { // path is set on success
-                                file.progress = parseInt(100.0 * evt.loaded / evt.total);
-                            }
-                        })
-                        .success(function (data, status, headers, config) {
-                            var file = _.findWhere(vm.user.files, { name: config.file.name });
-                            delete file.progress;
-                            file.path = '/uploads/' + data;
-                        })
-                        .error(function (data, status, headers, config) {
-                            var file = _.findWhere(vm.user.files, { name: config.file.name });
-                            vm.user.files = _.without(vm.user.files, _.findWhere(vm.user.files, file));
-                            file.error = status + " " + data;
-                            vm.failedUploads.push(file);
-                        })
-                }
-            }
-        }
-
-        function removeFile(file) {
-            vm.user.files = _.without(vm.user.files, _.findWhere(vm.user.files, { name: file.name }));
-
-            if (!file.saved) {
-                // file not linked to user so delete now
-                FileService.Delete(file);
-            } else {
-                // file linked to user so flag to be deleted on save
-                vm.filesToDelete = vm.filesToDelete || [];
-                vm.filesToDelete.push(file);
+                    .success(function (data, status, headers, config) {
+                        var file = _.findWhere(this.user.files, {name: config.file.name});
+                        delete file.progress;
+                        file.path = '/uploads/' + data;
+                    })
+                    .error(function (data, status, headers, config) {
+                        var file = _.findWhere(this.user.files, {name: config.file.name});
+                        this.user.files = _.without(this.user.files, _.findWhere(this.user.files, file));
+                        file.error = status + " " + data;
+                        this.failedUploads.push(file);
+                    })
             }
         }
     }
 
-})();
+    removeFile(file) {
+        const { FileService } = this.injectables;
+
+        this.user.files = _.without(this.user.files, _.findWhere(this.user.files, {name: file.name}));
+
+        if (!file.saved) {
+            // file not linked to user so delete now
+            FileService.Delete(file);
+        } else {
+            // file linked to user so flag to be deleted on save
+            this.filesToDelete.push(file);
+        }
+    }
+
+}
+
+export default UserEditController;
