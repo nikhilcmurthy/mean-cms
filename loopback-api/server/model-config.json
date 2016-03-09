@@ -14,9 +14,18 @@
     ]
   },
   "User": {
-    "dataSource": "db"
+    "dataSource": "db",
+    "public": false
   },
   "user": {
+    "dataSource": "mongodb_dev",
+    "public": true
+  },
+  "userCredential": {
+    "dataSource": "mongodb_dev",
+    "public": true
+  },
+  "userIdentity": {
     "dataSource": "mongodb_dev",
     "public": true
   },

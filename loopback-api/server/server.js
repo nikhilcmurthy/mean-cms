@@ -7,11 +7,18 @@ const debug = require('debug')('cms:loopback-api:server');
 const colors = require('colors/safe');
 const path = require('path');
 const http = require('http');
+const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
 
 /*
 * create a loopback application instance
 * */
 const app = module.exports = loopback();
+
+/*
+* configure application instance with passport
+* */
+import { CMSPassportConfig } from './passport-config';
+const passportConfigurator = new CMSPassportConfig(app);
 
 /*
 * bootstrap loopback application
@@ -38,6 +45,16 @@ app.middleware('parse', loopback.json());
 app.middleware('parse', loopback.urlencoded({extended: true}));
 app.middleware('final', loopback.urlNotFound());
 app.middleware('final:after', loopback.errorHandler());
+
+/*
+ * bootstrap application with passport configuration
+ **/
+passportConfigurator.bootstrap();
+
+app.get('/', ensureLoggedIn('/authenticate'), function(req, res) {
+  debug(colors.grey.bold('/root handler : %s'), req.originalUrl);
+  res.sendStatus(200);
+});
 
 /*
 * create a http server instance, setup port and start the server
